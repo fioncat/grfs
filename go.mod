@@ -3,6 +3,7 @@ module github.com/fioncat/grfs
 go 1.21.4
 
 require (
+	github.com/dustin/go-humanize v1.0.1
 	github.com/fatih/color v1.16.0
 	github.com/hanwen/go-fuse/v2 v2.4.2
 	github.com/kubescape/go-git-url v0.0.25
