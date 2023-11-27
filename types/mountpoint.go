@@ -62,6 +62,13 @@ type FilesystemMounter interface {
 	Mount(mp *MountPoint) error
 }
 
+type MountPointMetadata interface {
+	Put(mp *MountPoint) error
+	Get(repo *Repository) (*MountPoint, error)
+	List() ([]*MountPoint, error)
+	Remove(mp *MountPoint) error
+}
+
 func NewMountPoint(repo *Repository, path, logDir string) (*MountPoint, error) {
 	repoPath := strings.ReplaceAll(repo.String(), ":", "/")
 	logPath := filepath.Join(logDir, repoPath)
@@ -195,5 +202,5 @@ func (mp *MountPoint) Display() *MountPointDisplay {
 }
 
 func (mp *MountPoint) newMounter() mount.Interface {
-	return mount.New(os.Getenv("GRPFS_MOUNT_PATH"))
+	return mount.New(os.Getenv("GRFS_MOUNT_PATH"))
 }

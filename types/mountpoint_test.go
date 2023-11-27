@@ -89,3 +89,34 @@ func TestMountpointMount(t *testing.T) {
 		t.Fatalf("Expect %q not exists, err: %v", filename, err)
 	}
 }
+
+func TestMountpointMountTwice(t *testing.T) {
+	dir := "_test/mount_twice/"
+	p := getTestMountpoint(dir, t)
+
+	mounter := &tmpfsFilesystemMounter{}
+	err := p.Mount(mounter)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	status, _ := p.GetStatus()
+	if status != MountPointStatusMounted {
+		t.Fatalf("Unexpect status %q", status)
+	}
+
+	err = p.Mount(mounter)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	status, _ = p.GetStatus()
+	if status != MountPointStatusMounted {
+		t.Fatalf("Unexpect status %q", status)
+	}
+
+	err = p.Unmount()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
