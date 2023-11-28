@@ -56,7 +56,11 @@ type Node struct {
 	readContentMu sync.Mutex
 }
 
-func NewNode(ent *types.Entry, provider types.Provider) *Node {
+func NewNode(provider types.Provider) *Node {
+	return newNode(&types.Entry{IsDir: true}, provider)
+}
+
+func newNode(ent *types.Entry, provider types.Provider) *Node {
 	logger := logrus.WithFields(logrus.Fields{
 		"Path":      ent.Path,
 		"IsDir":     ent.IsDir,
@@ -154,7 +158,7 @@ func (n *Node) Lookup(ctx context.Context, name string, out *fuse.EntryOut) (*fu
 		return nil, syscall.ENOENT
 	}
 
-	subNode := NewNode(found, n.provider)
+	subNode := newNode(found, n.provider)
 	subAttr := subNode.entryToAttr(found, &out.Attr)
 	return n.NewInode(ctx, subNode, subAttr), 0
 }

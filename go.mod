@@ -9,6 +9,7 @@ require (
 	github.com/kubescape/go-git-url v0.0.25
 	github.com/sirupsen/logrus v1.9.3
 	github.com/whilp/git-urls v1.0.0
+	go.etcd.io/bbolt v1.3.8
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/mount-utils v0.28.4
 )

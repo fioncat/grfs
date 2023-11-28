@@ -67,6 +67,7 @@ type MountPointMetadata interface {
 	Get(repo *Repository) (*MountPoint, error)
 	List() ([]*MountPoint, error)
 	Remove(mp *MountPoint) error
+	Close() error
 }
 
 func NewMountPoint(repo *Repository, path, logDir string) (*MountPoint, error) {
@@ -199,6 +200,22 @@ func (mp *MountPoint) Display() *MountPointDisplay {
 		Status:       status,
 		ErrorMessage: errMsg,
 	}
+}
+
+func (mp *MountPoint) Validate() error {
+	err := mp.Repo.Validate()
+	if err != nil {
+		return fmt.Errorf("validate mountpoint repo: %w", err)
+	}
+
+	if mp.Path == "" {
+		return errors.New("mountpoint path is empty")
+	}
+	if mp.LogPath == "" {
+		return errors.New("mountpoint logPath is empty")
+	}
+
+	return nil
 }
 
 func (mp *MountPoint) newMounter() mount.Interface {
