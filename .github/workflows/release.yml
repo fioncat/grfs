@@ -1,0 +1,50 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.4
+
+      - name: Build linux-amd64
+        run: ./build.sh "linux" "amd64" "bin/linux-amd64/grfs"
+
+      - name: Build linux-arm64
+        run: ./build.sh "linux" "arm64" "bin/linux-arm64/grfs"
+
+      - name: Package linux-amd64
+        run: >
+          tar -cv
+          LICENSE README.md
+          -C bin/linux-amd64/ grfs
+          | gzip --best
+          > 'grfs_linux-amd64.tar.gz'
+
+      - name: Package linux-arm64
+        run: >
+          tar -cv
+          LICENSE README.md
+          -C bin/linux-arm64/ grfs
+          | gzip --best
+          > 'grfs_linux-arm64.tar.gz'
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            *.tar.gz
