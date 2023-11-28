@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 
 	"github.com/fioncat/grfs/provider"
@@ -103,6 +104,38 @@ func buildMountPointCommand(cmd *cobra.Command, action func(opts *MountPointOpti
 		}
 		return action(opts, args)
 	}
+	cmd.ValidArgsFunction = completeMountpoint
+}
+
+func completeMountpoint(_ *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) != 0 {
+		return nil, cobra.ShellCompDirectiveFilterDirs
+	}
+
+	cfg, err := types.LoadConfig()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	metadata, err := storage.OpenBolt(cfg)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	defer metadata.Close()
+
+	mps, err := metadata.List()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	var items []string
+	for _, mp := range mps {
+		item := mp.Repo.String()
+		if strings.HasPrefix(item, toComplete) {
+			items = append(items, item)
+		}
+	}
+
+	return items, cobra.ShellCompDirectiveNoFileComp
 }
 
 func (opts *MountPointOptions) mount(mp *types.MountPoint) error {
