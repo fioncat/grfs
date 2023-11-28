@@ -120,9 +120,13 @@ func newDefaultConfig(path, baseDir string) *Config {
 }
 
 func (c *Config) validate() error {
-	err := c.validateDuration(c.OpenBoltTimeout)
-	if err != nil {
-		return fmt.Errorf("invalid openBoltTimeout: %w", err)
+	if c.OpenBoltTimeout > 0 {
+		err := c.validateDuration(c.OpenBoltTimeout)
+		if err != nil {
+			return fmt.Errorf("invalid openBoltTimeout: %w", err)
+		}
+	} else {
+		c.OpenBoltTimeout = configDefaultOpenBoltTimeout
 	}
 
 	if c.Auths != nil {
@@ -132,11 +136,15 @@ func (c *Config) validate() error {
 	}
 	if c.Fs == nil {
 		c.Fs = c.newDefaultFilesystem()
-	} else {
-		err = c.validateDuration(c.Fs.EntryTimeout)
+	}
+
+	if c.Fs.EntryTimeout > 0 {
+		err := c.validateDuration(c.Fs.EntryTimeout)
 		if err != nil {
 			return fmt.Errorf("invalid fs.entryTimeout: %w", err)
 		}
+	} else {
+		c.Fs.EntryTimeout = configDefaultFsTimeout
 	}
 
 	return nil

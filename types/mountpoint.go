@@ -48,6 +48,8 @@ type MountPoint struct {
 	Path string `json:"path"`
 
 	LogPath string `json:"logPath"`
+
+	CreateTime int64 `json:"createTime"`
 }
 
 type MountPointDisplay struct {
@@ -86,9 +88,10 @@ func NewMountPoint(repo *Repository, path, logDir string) (*MountPoint, error) {
 	}
 
 	return &MountPoint{
-		Repo:    repo,
-		Path:    path,
-		LogPath: logPath,
+		Repo:       repo,
+		Path:       path,
+		LogPath:    logPath,
+		CreateTime: time.Now().Unix(),
 	}, nil
 }
 
@@ -147,7 +150,7 @@ func (mp *MountPoint) Mount(fsMounter FilesystemMounter) error {
 		return fmt.Errorf("read mountpoint: %w", err)
 	}
 	if len(ents) > 0 {
-		return fmt.Errorf("mountpoint path %q is not empty, cannot be mounted", mp.Path)
+		return fmt.Errorf("mountpoint path %q is not empty", mp.Path)
 	}
 
 	err = fsMounter.Mount(mp)
