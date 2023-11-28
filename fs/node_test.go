@@ -56,6 +56,8 @@ func (p *testProvider) ReadFile(ctx context.Context, path string) ([]byte, error
 	return nil, fmt.Errorf("Could not find file %q", path)
 }
 
+func (p *testProvider) Check(ctx context.Context) error { return nil }
+
 func (p *testProvider) convertEntries(ents []*testEntry) []*types.Entry {
 	result := make([]*types.Entry, len(ents))
 	for i, ent := range ents {
