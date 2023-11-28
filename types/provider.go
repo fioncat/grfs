@@ -17,6 +17,8 @@ type Entry struct {
 }
 
 type Provider interface {
+	Check(ctx context.Context) error
+
 	ReadDir(ctx context.Context, path string) ([]*Entry, error)
 	ReadFile(ctx context.Context, path string) ([]byte, error)
 }
